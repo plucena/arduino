@@ -32,7 +32,9 @@ void loop() {
      pos+=3;
      // copia 2a string
      strncpy ( string2, pos, 2 );
-     *pos+=2;
+     pos+=2;
+     // continua copiando outras strings...
+
       
      Serial.println(string1);
      Serial.println(string2);
