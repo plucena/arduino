@@ -1,0 +1,32 @@
+{
+  "_id": "_design/q",
+  "_rev": "1-01383eebdba6487801b3dd44faa1d684",
+  "views": {
+    "all": {
+      "map": "function (doc) {\n      emit(doc);\n}"
+    },
+    "availableForecasts": {
+      "map": "function (doc) {\n  if(doc.class==\"availableForecasts\")\n      emit(doc.class, {id:doc.id, initialTimestamp:doc.initial_timestamp,name:doc.name,timespan:doc.timespan });\n}",
+      "reduce": "function (keys, values) {\n   var voucherTypes = [];\n  values.forEach(function(v) {\n    voucherTypes = voucherTypes.concat(v);\n   });\n  return voucherTypes;\n}"
+    },
+    "forecastData": {
+      "map": "function (doc) {\n  if(doc.class==\"forecastData\")\n      emit(doc);\n}"
+    },
+    "forecastGridCells": {
+      "map": "function (doc) {\n  if(doc.class==\"forecastGridCells\")\n    if(doc.gridId==1)\n      emit(doc);\n}"
+    },
+    "forecastGrids": {
+      "map": "function (doc) {\n  if(doc.class==\"forecastGrids\" && doc.forecast_id)\n      emit(doc.forecast_id,  {swLatitude: doc.swLatitude, name: doc.name, spatialResolution: doc.spatialResolution, timeResolution: doc.timeResolution, swLongitude: doc.swLongitude, neLautude: doc.neLatitude });\n}"
+    },
+    "profile": {
+      "map": "function (doc) {\n  if(doc.class==\"profile\")\n      emit(doc);\n}"
+    }
+  },
+  "lists": {
+    "availableForecasts": "function (head,req) { start({'headers': {'Content-type': 'application/json' }});  var row; while(row = getRow()) { send(toJSON(row.value)); }  }",
+    "forecastGrids": "function (head,req) { start({'headers': {'Content-type': 'application/json' }});  var i=0; send('['); var row; while(row = getRow()) { if(i>0) send(',');  send(toJSON(row.value)); i++; } send(']'); }"
+  },
+  "shows": {
+    "cells": "function(doc, req) {  return  JSON.stringify(\"Hello \" + req.gridId); }"
+  }
+}
